@@ -1,19 +1,33 @@
+import fetch from "node-fetch";
+import FormData from "form-data";
+
 export default async function handler(req, res) {
-  const { image } = req.body;
-  const botToken = "8075080156:AAFhn7Wqxr-cxpvlSKdEFr1iL6qdOgWGwgw";
-  const chatId = "6676770258";
+  try {
+    const { image } = req.body;
+    const botToken = "8075080156:AAFhn7Wqxr-cxpvlSKdEFr1iL6qdOgWGwgw";
+    const chatId = "6676770258";
 
-  // Convert base64 ke file format Telegram
-  const photoBuffer = Buffer.from(image.split(",")[1], "base64");
+    // Convert base64 image ke buffer
+    const imageBuffer = Buffer.from(image.split(",")[1], "base64");
 
-  const formData = new FormData();
-  formData.append("chat_id", chatId);
-  formData.append("photo", new Blob([photoBuffer]), "photo.jpg");
+    // Siapkan form-data
+    const form = new FormData();
+    form.append("chat_id", chatId);
+    form.append("photo", imageBuffer, { filename: "photo.jpg" });
 
-  await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
-    method: "POST",
-    body: formData
-  });
+    // Kirim ke Telegram
+    const tg = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
+      method: "POST",
+      body: form,
+      headers: form.getHeaders(),
+    });
 
-  res.status(200).json({ success: true });
+    const tgRes = await tg.json();
+    console.log(tgRes);
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Gagal kirim foto ke Telegram" });
+  }
 }
