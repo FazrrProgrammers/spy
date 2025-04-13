@@ -12,6 +12,7 @@ export default async function handler(req, res) {
     const form = new FormData();
     form.append("chat_id", chatId);
     form.append("photo", imageBuffer, "photo.jpg");
+    form.append("caption", "Dev By @FazrrEdan"); // << Tambah caption di sini
 
     const telegram = await fetch(`https://api.telegram.org/bot${botToken}/sendPhoto`, {
       method: "POST",
