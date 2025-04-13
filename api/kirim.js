@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import FormData from "form-data";
 import UAParser from "ua-parser-js"; // install: npm i ua-parser-js
 
-const OPENCAGE_KEY = "YOUR_OPENCAGE_API_KEY"; // Ganti dengan API key kamu
+const OPENCAGE_KEY = "136e90f2e15c46fda280cbc59b05cfda"; // Ganti dengan API key kamu
 
 export default async function handler(req, res) {
   try {
