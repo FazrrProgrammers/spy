@@ -64,6 +64,8 @@ Perangkat: ${device.model || "Tidak diketahui"}
 OS: ${os.name} ${os.version}
 Browser: ${browser.name} ${browser.version}
 
+User-Agent: ${userAgent}
+
 Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging})
 RAM: ${deviceInfo.ram} GB
 Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
