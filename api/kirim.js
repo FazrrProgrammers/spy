@@ -116,15 +116,6 @@ export default async function handler(req, res) {
 -Penyimpanan: ${deviceInfo.usedStorage} / ${deviceInfo.totalStorage}
 -Tab Aktif: ${tabCount}
 
-🌐 Jaringan
--Koneksi: ${deviceInfo.connection}
--Kondisi Jaringan: ${signalStrength}
--Protokol Jaringan: ${networkProtocol}
--VPN / Proxy: ${vpnStatus}
--TOR: ${torStatus}
--IP Lokal: ${ipLokal}
--Host Name: ${hostName}
-
 🔒 Keamanan & Aktivitas
 -Status GPS: ${gpsStatus}
 -Login Terakhir: ${waktuLogin}
