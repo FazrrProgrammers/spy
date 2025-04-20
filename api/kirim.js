@@ -93,14 +93,6 @@ export default async function handler(req, res) {
 -Cuaca Lokal: ${deviceInfo.weather || "Tidak diketahui"}
 -Jarak dari Kota Terdekat: ${deviceInfo.cityDistance || "Tidak diketahui"}
 
-🧠 Perangkat & Sistem
--Perangkat: ${device.model || "Tidak diketahui"}
--OS: ${os.name} ${os.version}
--CPU: ${deviceInfo.cpu || "Tidak diketahui"}
--GPU: ${gpu}
--Uptime Perangkat: ${uptime}
--Dark Mode: ${darkModeStatus}
-
 🧪 Browser & Tampilan
 -Browser: ${browser.name} ${browser.version}
 -User-Agent: ${userAgent}
